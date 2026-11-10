@@ -1,0 +1,32 @@
+name: Restore verified 0.5.33 installers
+on:
+  push:
+    branches: [codex/release-transfer-0533]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: restore-release-0533
+  cancel-in-progress: false
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ALLOW_PARTIAL: ""
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download resumable transport pieces
+        run: |
+          test "$(gh release view v0.5.33 --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)" = true
+          mkdir input
+          for attempt in 1 2 3; do
+            gh release download v0.5.33-transfer --repo "$GITHUB_REPOSITORY" --dir input --clobber && break
+            if [ "$attempt" = 3 ]; then exit 1; fi
+            sleep 10
+          done
+      - name: Restore original bytes and verify every SHA-256
+        run: |
+          command -v zstd || { sudo apt-get update && sudo apt-get install -y zstd; }
+          python3 scripts/restore-release-0533.py
