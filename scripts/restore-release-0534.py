@@ -26,7 +26,7 @@ for f in m['files']:
  if missing and os.environ.get('ALLOW_PARTIAL'):
   pending.append(f['name']);continue
  assert not missing,missing
- local=os.environ.get('LOCAL_0.5.33S');base=(Path(local) if local else Path('baseline'))/f['baselineName']
+ local=os.environ.get('LOCAL_BASELINES');base=(Path(local) if local else Path('baseline'))/f['baselineName']
  if not local:
   base.parent.mkdir(exist_ok=True);run('gh','release','download',m['baselineTag'],'--repo',repo,'--pattern',f['baselineName'],'--dir',str(base.parent),'--clobber')
  assert sha(base)==f['baselineSha256']
