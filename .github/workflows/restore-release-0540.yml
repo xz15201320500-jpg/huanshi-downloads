@@ -22,7 +22,7 @@ jobs:
           test "$(gh release view v0.5.40 --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)" = true
           mkdir input
           for attempt in 1 2 3; do
-            gh release download v0.5.40-transfer --repo "$GITHUB_REPOSITORY" --dir input --clobber && break
+            gh release download v0.5.40-final-transfer --repo "$GITHUB_REPOSITORY" --dir input --clobber && break
             if [ "$attempt" = 3 ]; then exit 1; fi
             sleep 10
           done
